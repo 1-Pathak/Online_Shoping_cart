@@ -87,11 +87,7 @@ class AdminController extends Controller
     public function GenerateBrandThumbailsImage($image,$imagename)
     {
         $destinationPath = public_path('uploads/brands');
-        $img = Image::read($image->path());
-        $img->cover(124,124,"top");
-        $img->resize(124,124,function($constraint){
-            $constraint->aspectRatio(); 
-        })->save($destinationPath.'/'.$imagename);
+        $this->saveUploadedImage($image, $imagename, $destinationPath, null, 124, 124);
 
     }
 
@@ -139,11 +135,7 @@ class AdminController extends Controller
     public function GenerateCategoryThumbailsImage($image,$imagename)
     {
         $destinationPath = public_path('uploads/categories');
-        $img = Image::read($image->path());
-        $img->cover(124,124,"top");
-        $img->resize(124,124,function($constraint){
-            $constraint->aspectRatio(); 
-        })->save($destinationPath.'/'.$imagename);
+        $this->saveUploadedImage($image, $imagename, $destinationPath, null, 124, 124);
 
     }
 
@@ -207,21 +199,21 @@ class AdminController extends Controller
 
     public function product_store(Request $request)
         {
-          $request->validate([
-                'name' => 'required',
-                'slug' => 'required|unique:products,slug',
-                'short_description' => 'required',
-                'description' => 'required',
-                'regular_price' => 'required',
-                'sale_price' => 'required',
-                'SKU' => 'required',
-                'stock_status' => 'required',
-                'featured' => 'required',
-                'quantity' => 'required',
-                'image' => 'required|mimes:png,jpg,jpeg|max:2048',
-                'category_id' => 'required',
-                'brand_id' => 'required'
-             ]);
+             $request->validate([
+                     'name' => 'required',
+                     'slug' => 'required|unique:products,slug',
+                     'short_description' => 'required',
+                     'description' => 'required',
+                     'regular_price' => 'required',
+                     'sale_price' => 'required',
+                     'SKU' => 'required',
+                     'stock_status' => 'required',
+                     'featured' => 'required',
+                     'quantity' => 'required',
+                     'image' => 'required|mimes:png,jpg,jpeg|max:2048',
+                     'category_id' => 'required|integer|exists:categories,id',
+                     'brand_id' => 'required|integer|exists:brands,id'
+                 ]);
 
          $product = new Product();
          $product->name = $request->name;
@@ -276,19 +268,57 @@ class AdminController extends Controller
 
     public function GenerateproductThumbailImage($image,$imageName)
     {
-        $destinationPathThumbnail = public_path('uploads/products/thumbnails');
         $destinationPath = public_path('uploads/products');
-        $img = Image::read($image->path());
+        $destinationPathThumbnail = public_path('uploads/products/thumbnails');
+        $this->saveUploadedImage($image, $imageName, $destinationPath, $destinationPathThumbnail, 540, 689, 104, 104);
 
-        $img->cover(540,689,"top");
-        $img->resize(540,689,function($constraint){
-            $constraint->aspectRatio(); 
-        })->save($destinationPath.'/'.$imageName);
+    }
 
-        $img->resize(104,104,function($constraint){
-            $constraint->aspectRatio(); 
-        })->save($destinationPathThumbnail.'/'.$imageName);
+    private function saveUploadedImage($image, $imageName, $destinationPath, $thumbPath = null, $width = null, $height = null, $thumbWidth = null, $thumbHeight = null)
+    {
+        if (! File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
+        }
 
+        if ($thumbPath && ! File::exists($thumbPath)) {
+            File::makeDirectory($thumbPath, 0755, true);
+        }
+
+        $destinationFile = $destinationPath . '/' . $imageName;
+
+        try {
+            if (extension_loaded('gd') || extension_loaded('imagick')) {
+                $img = Image::make($image->path());
+
+                if ($width && $height) {
+                    $img->fit($width, $height, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
+
+                $img->save($destinationFile);
+
+                if ($thumbPath) {
+                    $thumb = Image::make($image->path());
+                    if ($thumbWidth && $thumbHeight) {
+                        $thumb->fit($thumbWidth, $thumbHeight, function ($constraint) {
+                            $constraint->aspectRatio();
+                            $constraint->upsize();
+                        });
+                    }
+                    $thumb->save($thumbPath . '/' . $imageName);
+                }
+                return;
+            }
+        } catch (\Throwable $e) {
+            // Fall back to a direct file move when image driver isn't available.
+        }
+
+        $image->move($destinationPath, $imageName);
+        if ($thumbPath) {
+            copy($destinationFile, $thumbPath . '/' . $imageName);
+        }
     }
 
     public function product_edit($id)
@@ -314,8 +344,8 @@ class AdminController extends Controller
             'featured' => 'required',
             'quantity' => 'required',
             'image' => 'mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required',
-            'brand_id' => 'required'
+            'category_id' => 'required|integer|exists:categories,id',
+            'brand_id' => 'required|integer|exists:brands,id'
         ]);
 
         $product = Product::find($request->id);

@@ -25,8 +25,11 @@ class AuthAdmin
             return $next($request);
            } 
            else{
-            session()->flush();
-            return redirect()->route('login');
+            // Log the user out and invalidate session instead of flushing everything abruptly
+            \Illuminate\Support\Facades\Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->with('error', 'Access denied: admin only area.');
            }
         }
         else{

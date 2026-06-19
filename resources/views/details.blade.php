@@ -23,18 +23,22 @@
                     </div>
 
                     {{-- gallery iamge is started here --}}
-                    @foreach (explode(',',$product->images) as $gimg)
-                  <div class="swiper-slide product-single__image-item">
-                    <img loading="lazy" class="h-auto" src="{{ asset('uploads/products') }}/{{ $gimg}}" width="674"
-                      height="674" alt="" />
-                    <a data-fancybox="gallery" href="{{ asset('uploads/products') }}/{{ $gimg }}" data-bs-toggle="tooltip"
-                      data-bs-placement="left" title="Zoom">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_zoom" />
-                      </svg>
-                    </a>
-                  </div>
-                  @endforeach
+                    @if (!empty($product->images))
+                        @foreach (explode(',', $product->images) as $gimg)
+                            @if (!empty(trim($gimg)))
+                                <div class="swiper-slide product-single__image-item">
+                                  <img loading="lazy" class="h-auto" src="{{ asset('uploads/products/' . trim($gimg)) }}" width="674"
+                                    height="674" alt="" />
+                                  <a data-fancybox="gallery" href="{{ asset('uploads/products/' . trim($gimg)) }}" data-bs-toggle="tooltip"
+                                    data-bs-placement="left" title="Zoom">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <use href="#icon_zoom" />
+                                    </svg>
+                                  </a>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endif
                 </div>
                 <div class="swiper-button-prev"><svg width="7" height="11" viewBox="0 0 7 11"
                     xmlns="http://www.w3.org/2000/svg">
@@ -50,11 +54,14 @@
             <div class="product-single__thumbnail">
               <div class="swiper-container">
                 <div class="swiper-wrapper">
-                  <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto"src="{{ asset('uploads/products/thumbnails') }}/{{ $product->image }}" width="104" height="104" alt="" /></div>
-                  @foreach (explode(',',$product->images) as $gimg)
-
-                  <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto"src="{{ asset('uploads/products/thumbnails') }}/{{ $gimg }}" width="104" height="104" alt="" /></div>
-                  @endforeach
+                  <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto" src="{{ asset('uploads/products/' . $product->image) }}" width="104" height="104" alt="" /></div>
+                  @if (!empty($product->images))
+                      @foreach (explode(',', $product->images) as $gimg)
+                          @if (!empty(trim($gimg)))
+                            <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto" src="{{ asset('uploads/products/' . trim($gimg)) }}" width="104" height="104" alt="" /></div>
+                          @endif
+                      @endforeach
+                  @endif
                 </div>
               </div>
             </div>
@@ -112,7 +119,7 @@
           <div class="product-single__short-desc">
             <p>{{ $product->short_description }}</p>
           </div>
-          @if (Cart::instance('cart')->content()->where('id',$product->id)->count(0))
+          @if (Cart::instance('cart')->content()->where('id',$product->id)->count() > 0)
               <a href="{{ route('cart.index') }}" class="btn btn-warning mb-3">Go To Your Cart Dear</a>
           @else
             <form name="addtocart-form" method="post" action="{{ route('cart.add') }}">

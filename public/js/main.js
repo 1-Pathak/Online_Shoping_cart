@@ -35,6 +35,8 @@
       });
       selectIMG.selectpicker();
     }
+    // Initialize selectpicker for category and brand selects
+    $("select[name='category_id'], select[name='brand_id']").selectpicker();
   };
 
   var menuleft = function () {

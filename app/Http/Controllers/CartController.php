@@ -163,10 +163,10 @@ class CartController extends Controller
         $order = new Order();
         
         $order->user_id = $user_id;
-        $order->subtotal = Session::get('checkout')['subtotal'];
-        $order->discount = Session::get('checkout')['discount'];
-        $order->tax = Session::get('checkout')['tax'];
-        $order->total = Session::get('checkout')['total'];
+        $order->subtotal = floatval(str_replace(',', '', Session::get('checkout')['subtotal']));
+        $order->discount = floatval(str_replace(',', '', Session::get('checkout')['discount']));
+        $order->tax = floatval(str_replace(',', '', Session::get('checkout')['tax']));
+        $order->total = floatval(str_replace(',', '', Session::get('checkout')['total']));
         $order->name = $address->name; 
         $order->phone = $address->phone; 
         $order->locality = $address->locality; 
@@ -226,19 +226,19 @@ class CartController extends Controller
         if(Session::has('coupon'))
         {
             Session::put('checkout',[
-                'discount' => Session::get('discounts')['discount'],
-                'subtotal' => Session::get('discounts')['subtotal'],
-                'tax' => Session::get('discounts')['tax'],
-                'total' => Session::get('discounts')['total'],
+                'discount' => floatval(str_replace(',', '', Session::get('discounts')['discount'])),
+                'subtotal' => floatval(str_replace(',', '', Session::get('discounts')['subtotal'])),
+                'tax' => floatval(str_replace(',', '', Session::get('discounts')['tax'])),
+                'total' => floatval(str_replace(',', '', Session::get('discounts')['total'])),
             ]);
         }
         else
         {
             Session::put('checkout',[
                 'discount' => 0,
-                'subtotal' => Cart::instance('cart')->subtotal(),
-                'tax' => Cart::instance('cart')->tax(),
-                'total' => Cart::instance('cart')->total(),
+                'subtotal' => floatval(str_replace(',', '', Cart::instance('cart')->subtotal())),
+                'tax' => floatval(str_replace(',', '', Cart::instance('cart')->tax())),
+                'total' => floatval(str_replace(',', '', Cart::instance('cart')->total())),
             ]);
         }
     }

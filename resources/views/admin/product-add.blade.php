@@ -38,14 +38,14 @@
                     <input class="mb-10" type="text" placeholder="Enter product name" name="name" tabindex="0" value="{{ old('name') }}" aria-required="true" required="">
                     <div class="text-tiny">Do not exceed 100 characters when entering the product name.</div>
                 </fieldset>
-                @error('name') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('name') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 <fieldset class="name">
                     <div class="body-title mb-10">Slug <span class="tf-color-1">*</span></div>
                     <input class="mb-10" type="text" placeholder="Enter product slug" name="slug" tabindex="0" value="{{ old('slug') }}" aria-required="true" required="">
                     <div class="text-tiny">Do not exceed 100 characters when entering the product name.</div>
                 </fieldset>
-                @error('slug') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('slug') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
 
                 <div class="gap22 cols">
@@ -54,28 +54,28 @@
                         </div>
                         <div class="select">
                             <select class="" name="category_id">
-                                <option>Choose category</option>
+                                <option value="">Choose category</option>
                                 @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </fieldset>
-                    @error('category_id') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('category_id') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                     <fieldset class="brand">
                         <div class="body-title mb-10">Brand <span class="tf-color-1">*</span>
                         </div>
                         <div class="select">
                             <select class="" name="brand_id">
-                                <option>Choose Brand</option>
+                                <option value="">Choose Brand</option>
                                 @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </fieldset>
-                    @error('brand_id') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('brand_id') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 </div>
 
@@ -84,14 +84,14 @@
                     <textarea class="mb-10 ht-150" name="short_description" placeholder="Short Description" tabindex="0" aria-required="true" required="{{ old('short_description') }}"></textarea>
                     <div class="text-tiny">Do not exceed 100 characters when entering the product name.</div>
                 </fieldset>
-                @error('short_description') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('short_description') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 <fieldset class="description">
                     <div class="body-title mb-10">Description <span class="tf-color-1">*</span> </div>
                     <textarea class="mb-10" name="description" placeholder="Description"tabindex="0" aria-required="true" required="{{ old('description') }}"></textarea>
                     <div class="text-tiny">Do not exceed 100 characters when entering the  product name.</div>
                 </fieldset>
-                @error('description') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('description') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
             </div>
             <div class="wg-box">
@@ -113,7 +113,7 @@
                         </div>
                     </div>
                 </fieldset>
-                @error('image') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('image') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
 
                 <fieldset>
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 </fieldset>
-                @error('images') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                @error('images') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
 
                 <div class="cols gap22">
@@ -142,14 +142,14 @@
                                 class="tf-color-1">*</span></div>
                         <input class="mb-10" type="text" placeholder="Enter regular price"  name="regular_price" tabindex="0" value="{{ old('regular_price') }}" aria-required="true"required="">
                     </fieldset>
-                    @error('regular_price') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('regular_price') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                     <fieldset class="name">
                         <div class="body-title mb-10">Sale Price <span
                                 class="tf-color-1">*</span></div>
                         <input class="mb-10" type="text" placeholder="Enter sale price"   name="sale_price" tabindex="0" value="{{ old('sale_price') }}" aria-required="true"  required="">
                     </fieldset>
-                    @error('sale_price') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('sale_price') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 </div>
 
@@ -160,14 +160,14 @@
                         </div>
                         <input class="mb-10" type="text" placeholder="Enter SKU" name="SKU"tabindex="0" value="{{ old('SKU') }}" aria-required="true" required="">
                     </fieldset>
-                    @error('SKU') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('SKU') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                     <fieldset class="name">
                         <div class="body-title mb-10">Quantity <span class="tf-color-1">*</span>
                         </div>
                         <input class="mb-10" type="text" placeholder="Enter quantity"   name="quantity" tabindex="0" value="{{ old('quantity') }}" aria-required="true" required="">
                     </fieldset>
-                    @error('quantity') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('quantity') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 </div>
 
@@ -181,7 +181,7 @@
                             </select>
                         </div>
                     </fieldset>
-                    @error('stock_status') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('stock_status') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                     <fieldset class="name">
                         <div class="body-title mb-10">Featured</div>
@@ -192,7 +192,7 @@
                             </select>
                         </div>
                     </fieldset>
-                    @error('featured') <span class="alert alert-danger text-center">{{ $massage }} @enderror
+                    @error('featured') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
 
                 </div>
                 <div class="cols gap10">

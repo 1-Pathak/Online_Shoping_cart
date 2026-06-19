@@ -63,9 +63,15 @@ class ShopController extends Controller
 
     public function product_details($product_slug)
     {
-        $product = Product::where('slug',$product_slug)->first();
-        $rproducts = Product::where('slug','<>',$product_slug)->get()->take(8);
-        return view('details',compact('product','rproducts'));
+        $product = Product::where('slug', $product_slug)->first();
+
+        if (! $product) {
+            return redirect()->route('shop.shop')->with('error', 'Product not found.');
+        }
+
+        $rproducts = Product::where('slug', '<>', $product_slug)->take(8)->get();
+
+        return view('details', compact('product', 'rproducts'));
     }
 
 
