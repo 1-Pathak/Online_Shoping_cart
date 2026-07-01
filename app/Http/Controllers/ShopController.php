@@ -11,54 +11,41 @@ class ShopController extends Controller
 {
     public function shop(Request $request)
     {
-        $size = $request->query('size') ? $request->query('size') : 12;
-        $o_column = "";
-        $o_order = "";
-        $order = $request->query('order') ? $request->query('order') : -1;
+        $size = $request->query('size', 12);
+        $order = (int) $request->query('order', -1);
         $f_brands = $request->query('brands');
         $f_categories = $request->query('categories');
-        $min_price = $request->query('min') ? $request->query('min') : 100;
-        $max_price = $request->query('max') ? $request->query('max') : 5000;
-        switch ($order) {
-            case 1:
-                $o_column="created_at";
-                $o_order="DESC";
-                break;
-                
-                case 2:
-                    $o_column="created_at";
-                    $o_order="ASC";
-                    break;
-                
-                case 3:
-                $o_column="sale_price";
-                $o_order="ASC";
-                break;
+        $min_price = $request->query('min', 100);
+        $max_price = $request->query('max', 5000);
 
-                case 4:
-                    $o_column="sale_price";
-                    $o_order="DESC";
-                    break;
-            
-            default:
-                    $o_column="id";
-                    $o_order="DESC";
-                
-        }
+        $sortOptions = [
+            -1 => ['id', 'DESC'],
+            1 => ['created_at', 'DESC'],
+            2 => ['created_at', 'ASC'],
+            3 => ['sale_price', 'ASC'],
+            4 => ['sale_price', 'DESC'],
+        ];
+
+        [$o_column, $o_order] = $sortOptions[$order] ?? $sortOptions[-1];
+
         $brands = Brand::orderBy('name','ASC')->get();
         $categories = Category::orderBy('name','ASC')->get();
-        $products = Product::where(function($query) use($f_brands){
-            $query->whereIn('brand_id',explode(',',$f_brands))->orWhereRaw("'".$f_brands."'=''");
-        })
-        ->where(function($query) use($f_categories){
-            $query->whereIn('category_id',explode(',',$f_categories))->orWhereRaw("'".$f_categories."'=''");
-        })
-        ->where(function($query) use($min_price,$max_price){
-            $query->whereBetween('regular_price',[$min_price,$max_price])
-            ->orWhereBetween('sale_price',[$min_price,$max_price]);
-        })
-                        ->orderBy($o_column,$o_order)->paginate($size);
-        return view('shop',compact('products','size','order','brands','f_brands','categories','f_categories','min_price','max_price'));
+        $products = Product::when($f_brands, function ($query, $f_brands) {
+                $query->whereIn('brand_id', explode(',', $f_brands));
+            })
+            ->when($f_categories, function ($query, $f_categories) {
+                $query->whereIn('category_id', explode(',', $f_categories));
+            })
+            ->when($min_price !== null && $max_price !== null, function ($query) use ($min_price, $max_price) {
+                $query->where(function ($query) use ($min_price, $max_price) {
+                    $query->whereBetween('regular_price', [$min_price, $max_price])
+                        ->orWhereBetween('sale_price', [$min_price, $max_price]);
+                });
+            })
+            ->orderBy($o_column, $o_order)
+            ->paginate($size);
+
+        return view('shop', compact('products', 'size', 'order', 'brands', 'f_brands', 'categories', 'f_categories', 'min_price', 'max_price'));
     }
 
     public function product_details($product_slug)

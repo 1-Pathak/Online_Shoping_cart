@@ -108,8 +108,8 @@ class AdminController extends Controller
         return view('admin.categories',compact('categories'));
     }
 
-    public function category_add(){
-        $categories = Category::orderBy('id','DESC')->paginate(10);
+    public function category_add()
+    {
         return view('admin.category-add');
     }
 
